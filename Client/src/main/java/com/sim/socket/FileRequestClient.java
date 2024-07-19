@@ -22,14 +22,14 @@ public class FileRequestClient {
              FileChannel fileChannel = fis.getChannel();
              SocketChannel socketChannel = SocketChannel.open();
         ) {
-
             socketChannel.connect(new InetSocketAddress(SERVER_HOST, SERVER_PORT));
             socketChannel.configureBlocking(true);
 
+            long transferSize = 0;
             if (isZeroCopy) {
-                sendWithZeroCopy(socketChannel, fileChannel);
+                transferSize = sendWithZeroCopy(socketChannel, fileChannel);
             } else {
-                sendWithNonZeroCopy(socketChannel, fileChannel);
+                transferSize = sendWithNonZeroCopy(socketChannel, fileChannel);
             }
 
             ByteBuffer ackBuffer = ByteBuffer.allocate(1024);
@@ -40,8 +40,8 @@ public class FileRequestClient {
         }
     }
 
-    private void sendWithNonZeroCopy(SocketChannel socketChannel, FileChannel fileChannel) throws IOException {
-        int transferSize = 0;
+    private long sendWithNonZeroCopy(SocketChannel socketChannel, FileChannel fileChannel) throws IOException {
+        long transferSize = 0;
 
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         int numberOfReadBytes = 0;
@@ -52,9 +52,10 @@ public class FileRequestClient {
 
             transferSize += Math.max(numberOfReadBytes, 0);
         }
+        return transferSize;
     }
 
-    private void sendWithZeroCopy(SocketChannel socketChannel, FileChannel fileChannel) throws IOException {
-        fileChannel.transferTo(0, fileChannel.size(), socketChannel); // java nio transferTo
+    private long sendWithZeroCopy(SocketChannel socketChannel, FileChannel fileChannel) throws IOException {
+        return fileChannel.transferTo(0, fileChannel.size(), socketChannel); // java nio transferTo
     }
 }

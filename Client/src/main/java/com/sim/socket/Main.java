@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) {
         FileRequestClient client = new FileRequestClient();
 
-        int loopCount = 10000;
+        int loopCount = 1000;
         long startTime, endTime;
 
         /**
@@ -27,7 +27,7 @@ public class Main {
          */
         startTime = System.currentTimeMillis();
         for(int i = 0; i < loopCount; i++) {
-//            client.sendMessage(false);
+            client.sendMessage(false);
         }
         endTime = System.currentTimeMillis();
         averageTime = (endTime - startTime) / loopCount;
