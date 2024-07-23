@@ -40,6 +40,11 @@ public class EchoHandler implements Handler {
 
     private void read() throws IOException {
         int readCount = this.socketChannel.read(this.buffer);
+        if (readCount == -1) {
+            closeConnection();
+            return;
+        }
+
         if (readCount > 0) {
             buffer.flip();
             byte[] bytes = new byte[buffer.remaining()];
@@ -57,6 +62,16 @@ public class EchoHandler implements Handler {
         buffer.clear();
         selectionKey.interestOps(SelectionKey.OP_READ);
         state = State.READING;
+    }
+
+    private void closeConnection() {
+        try {
+            this.socketChannel.close();
+            this.selectionKey.cancel();
+            LOGGER.info("connection closed");
+        } catch (IOException e) {
+            LOGGER.severe("error occur when attempt to close connection, error message: " + e.getMessage());
+        }
     }
 
     private enum State {
