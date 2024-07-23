@@ -40,18 +40,12 @@ public class MultiplexingServer {
         try {
             if (key.isValid()) {
                 switch (key.readyOps()) {
-                    case SelectionKey.OP_ACCEPT:
-                        handleAcceptEvent(key);
-                        break;
-                    case SelectionKey.OP_READ:
-                        handleReadEvent(key);
-                        break;
-                    case SelectionKey.OP_WRITE:
-                        handleWriteEvent(key);
-                        break;
+                    case SelectionKey.OP_ACCEPT -> handleAcceptEvent(key);
+                    case SelectionKey.OP_READ -> handleReadEvent(key);
+                    case SelectionKey.OP_WRITE -> handleWriteEvent(key);
                 }
             }
-        } catch (ClosedChannelException e){
+        } catch (ClosedChannelException e) {
             closeSocket((SocketChannel) key.channel());
         } catch (IOException e) {
             LOGGER.severe("error occur when attempt to handle event, error message: " + e.getMessage());
