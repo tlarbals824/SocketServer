@@ -1,18 +1,17 @@
-package com.sim.socket;
+package com.sim.socket.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-public class SingleThreadNonBlockingSocketServer {
-    private static final Logger LOGGER = Logger.getLogger(SingleThreadNonBlockingSocketServer.class.getName());
+public class MultiplexingServer {
+    private static final Logger LOGGER = Logger.getLogger(MultiplexingServer.class.getName());
     private static final Integer SOCKET_SERVER_PORT = 8080;
     private static final Map<SocketChannel, ByteBuffer> sockets = new ConcurrentHashMap<>();
 
@@ -29,7 +28,7 @@ public class SingleThreadNonBlockingSocketServer {
                 selector.select();
 
                 Set<SelectionKey> selectionKeys = selector.selectedKeys();
-                selectionKeys.forEach(SingleThreadNonBlockingSocketServer::dispatch);
+                selectionKeys.forEach(MultiplexingServer::dispatch);
                 selectionKeys.clear();
             }
         } catch (IOException e) {
